@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minimal Glass Home</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      user-select: none;
+    }
+
+    body, html {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background-color: #050505;
+      color: #ffffff;
+    }
+
+    /* 3 Rotating 4K Backgrounds */
+    .bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      transition: opacity 2s ease-in-out;
+      opacity: 0;
+      z-index: 1;
+    }
+    .bg.active { opacity: 1; }
+
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.65) 100%);
+      z-index: 2;
+    }
+
+    /* Liquid Glass Base */
+    .glass {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(28px) saturate(170%);
+      -webkit-backdrop-filter: blur(28px) saturate(170%);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+      border-radius: 24px;
+    }
+
+    /* Main Grid Layout */
+    .dashboard {
+      position: relative;
+      z-index: 3;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 5vh 5vw;
+    }
+
+    /* Top Bar: Subscriptions Expiry Widget */
+    .top-bar {
+      width: 100%;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .expiry-card {
+      padding: 14px 22px;
+      min-width: 250px;
+    }
+
+    .expiry-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      opacity: 0.6;
+      margin-bottom: 8px;
+      font-weight: 700;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 4px;
+    }
+
+    .expiry-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      margin-bottom: 5px;
+    }
+
+    .expiry-row:last-child { margin-bottom: 0; }
+    .expiry-name { opacity: 0.8; font-weight: 500; }
+    .expiry-date { font-weight: 600; color: #72efdd; }
+
+    /* Center Clock */
+    .center-clock {
+      padding: 3vh 5vw;
+      text-align: center;
+      margin-top: -4vh;
+    }
+
+    .time {
+      font-size: 5.5rem;
+      font-weight: 200;
+      letter-spacing: -2px;
+      line-height: 1;
+      text-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    }
+
+    .date {
+      font-size: 1.25rem;
+      font-weight: 400;
+      opacity: 0.8;
+      margin-top: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* App Dock */
+    .dock {
+      display: flex;
+      gap: 20px;
+      padding: 16px 24px;
+      margin-bottom: 2vh;
+    }
+
+    .app-tile {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 110px;
+      height: 110px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      text-decoration: none;
+      color: white;
+      transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+      cursor: pointer;
+      outline: none;
+    }
+
+    .app-tile svg {
+      width: 42px;
+      height: 42px;
+      fill: currentColor;
+      margin-bottom: 8px;
+    }
+
+    .app-tile span {
+      font-size: 0.85rem;
+      font-weight: 500;
+      opacity: 0.9;
+    }
+
+    /* D-pad Focus / Hover State */
+    .app-tile:focus, .app-tile:hover {
+      background: rgba(255, 255, 255, 0.28);
+      border-color: rgba(255, 255, 255, 0.6);
+      transform: scale(1.12);
+      box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2), 0 0 16px rgba(255, 255, 255, 0.35);
+    }
+
+    /* Secondary "More Apps / Groups" Modal Drawer */
+    .modal-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(16px);
+      z-index: 10;
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .drawer-card {
+      width: 65vw;
+      max-width: 900px;
+      padding: 35px 45px;
+    }
+
+    .drawer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+
+    .drawer-title {
+      font-size: 1.5rem;
+      font-weight: 300;
+      letter-spacing: 1px;
+    }
+
+    .close-btn {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: white;
+      padding: 8px 18px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .drawer-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 3 Wallpapers (Rotating every 5 mins) -->
+  <div id="bg0" class="bg active" style="background-image: url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=2560&auto=format&fit=crop');"></div>
+  <div id="bg1" class="bg" style="background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=2560&auto=format&fit=crop');"></div>
+  <div id="bg2" class="bg" style="background-image: url('https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=2560&auto=format&fit=crop');"></div>
+
+  <div class="overlay"></div>
+
+  <div class="dashboard">
+    <!-- Top-Right Expiry Widget -->
+    <div class="top-bar">
+      <div class="glass expiry-card">
+        <div class="expiry-title">Subscription Expiry</div>
+        <div class="expiry-row"><span class="expiry-name">YouTube</span><span class="expiry-date" id="exp-yt">Nov 15, 2026</span></div>
+        <div class="expiry-row"><span class="expiry-name">Netflix</span><span class="expiry-date" id="exp-nf">Dec 01, 2026</span></div>
+        <div class="expiry-row"><span class="expiry-name">HoiChoi</span><span class="expiry-date" id="exp-hc">Oct 30, 2026</span></div>
+        <div class="expiry-row"><span class="expiry-name">Prime Video</span><span class="expiry-date" id="exp-pv">Jan 10, 2027</span></div>
+        <div class="expiry-row"><span class="expiry-name">Apple TV</span><span class="expiry-date" id="exp-atv">Nov 24, 2026</span></div>
+      </div>
+    </div>
+
+    <!-- Center Clock -->
+    <div class="glass center-clock">
+      <div class="time" id="clock">12:00</div>
+      <div class="date" id="date">Loading...</div>
+    </div>
+
+    <!-- Main App Dock -->
+    <div class="glass dock">
+      <!-- 1. YouTube -->
+      <a href="https://www.youtube.com/tv" class="app-tile main-nav" tabindex="1">
+        <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+        <span>YouTube</span>
+      </a>
+
+      <!-- 2. Netflix -->
+      <a href="https://www.netflix.com" class="app-tile main-nav" tabindex="2">
+        <svg viewBox="0 0 24 24"><path d="M4 0h3.815l6.092 16.924L14.004 0h3.996v24h-3.815L8.093 7.076 8.004 24H4V0z"/></svg>
+        <span>Netflix</span>
+      </a>
+
+      <!-- 3. HoiChoi -->
+      <a href="https://www.hoichoi.tv" class="app-tile main-nav" tabindex="3">
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/></svg>
+        <span>HoiChoi</span>
+      </a>
+
+      <!-- 4. Prime Video -->
+      <a href="https://www.primevideo.com" class="app-tile main-nav" tabindex="4">
+        <svg viewBox="0 0 24 24"><path d="M17.842 16.035c-.416.326-1.042.492-1.78.492-1.127 0-2.025-.373-2.673-1.09-.646-.717-.978-1.73-.978-3.003 0-1.344.332-2.392.984-3.111.652-.719 1.558-1.085 2.697-1.085.733 0 1.34.148 1.75.438v7.359zM12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2z"/></svg>
+        <span>Prime</span>
+      </a>
+
+      <!-- 5. Apple TV -->
+      <a href="https://tv.apple.com" class="app-tile main-nav" tabindex="5">
+        <svg viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.61-.75 1.04-1.8 0.92-2.87-.9.04-2.01.61-2.65 1.36-.57.65-.98 1.7-.86 2.73.99.08 2.02-.49 2.59-1.22z"/></svg>
+        <span>Apple TV</span>
+      </a>
+
+      <!-- 6. Groups / More Apps -->
+      <div class="app-tile main-nav" id="moreAppsBtn" tabindex="6">
+        <svg viewBox="0 0 24 24"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/></svg>
+        <span>Groups</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Groups / Secondary Apps Drawer -->
+  <div class="modal-overlay" id="appDrawer">
+    <div class="glass drawer-card">
+      <div class="drawer-header">
+        <div class="drawer-title">All Apps & Inputs</div>
+        <button class="close-btn" id="closeDrawerBtn">Back / Close</button>
+      </div>
+      <div class="drawer-grid">
+        <a href="https://open.spotify.com" class="app-tile drawer-item">
+          <span>Spotify</span>
+        </a>
+        <a href="https://www.disneyplus.com" class="app-tile drawer-item">
+          <span>Disney+</span>
+        </a>
+        <a href="https://app.plex.tv" class="app-tile drawer-item">
+          <span>Plex</span>
+        </a>
+        <a href="https://www.twitch.tv" class="app-tile drawer-item">
+          <span>Twitch</span>
+        </a>
+        <a href="https://fast.com" class="app-tile drawer-item">
+          <span>Speed Test</span>
+        </a>
+        <a href="https://www.google.com" class="app-tile drawer-item">
+          <span>Search</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 1. Clock & Date
+    function updateClock() {
+      const now = new Date();
+      let hours = now.getHours();
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12 || 12;
+      document.getElementById('clock').textContent = `${hours}:${minutes}`;
+      const options = { weekday: 'long', month: 'short', day: 'numeric' };
+      document.getElementById('date').textContent = `${now.toLocaleDateString(undefined, options)} • ${ampm}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // 2. Wallpaper Rotator (Cycles every 5 minutes / 300,000ms)
+    let currentIdx = 0;
+    setInterval(() => {
+      document.getElementById(`bg${currentIdx}`).classList.remove('active');
+      currentIdx = (currentIdx + 1) % 3;
+      document.getElementById(`bg${currentIdx}`).classList.add('active');
+    }, 5 * 60 * 1000);
+
+    // 3. Drawer Toggle Logic
+    const drawer = document.getElementById('appDrawer');
+    const moreBtn = document.getElementById('moreAppsBtn');
+    const closeBtn = document.getElementById('closeDrawerBtn');
+
+    function openDrawer() {
+      drawer.classList.add('open');
+      const firstItem = drawer.querySelector('.drawer-item');
+      if (firstItem) firstItem.focus();
+    }
+
+    function closeDrawer() {
+      drawer.classList.remove('open');
+      moreBtn.focus();
+    }
+
+    moreBtn.addEventListener('click', openDrawer);
+    closeBtn.addEventListener('click', closeDrawer);
+
+    // 4. Remote Control Focus Management
+    const mainTiles = Array.from(document.querySelectorAll('.main-nav'));
+    let activeIndex = 0;
+
+    window.addEventListener('keydown', (e) => {
+      // Exit modal on TV Back / Escape
+      if (e.key === 'Escape' || e.key === 'GoBack' || e.keyCode === 461) {
+        if (drawer.classList.contains('open')) {
+          closeDrawer();
+        }
+        return;
+      }
+
+      // If drawer is closed, manage main dock navigation
+      if (!drawer.classList.contains('open')) {
+        if (e.key === 'ArrowRight') {
+          activeIndex = (activeIndex + 1) % mainTiles.length;
+          mainTiles[activeIndex].focus();
+        } else if (e.key === 'ArrowLeft') {
+          activeIndex = (activeIndex - 1 + mainTiles.length) % mainTiles.length;
+          mainTiles[activeIndex].focus();
+        } else if (e.key === 'Enter') {
+          mainTiles[activeIndex].click();
+        }
+      }
+    });
+  </script>
+</body>
+</html>
