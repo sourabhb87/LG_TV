@@ -1,0 +1,9 @@
+{
+  "id": "com.custom.home",
+  "version": "1.0.0",
+  "vendor": "MyCustomHome",
+  "type": "web",
+  "main": "index.html",
+  "title": "Home Dashboard",
+  "icon": "icon.png"
+}
