@@ -21,7 +21,7 @@
       color: #ffffff;
     }
 
-    /* 3 Rotating 4K Backgrounds */
+    /* 3 Rotating 4K Backgrounds (Every 5 mins) */
     .bg {
       position: absolute;
       top: 0;
@@ -33,6 +33,7 @@
       transition: opacity 2s ease-in-out;
       opacity: 0;
       z-index: 1;
+      transform: scale(1.02);
     }
     .bg.active { opacity: 1; }
 
@@ -42,7 +43,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: radial-gradient(circle at center, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.65) 100%);
+      background: radial-gradient(circle at center, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.65) 100%);
       z-index: 2;
     }
 
@@ -53,10 +54,10 @@
       -webkit-backdrop-filter: blur(28px) saturate(170%);
       border: 1px solid rgba(255, 255, 255, 0.18);
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.25);
-      border-radius: 24px;
+      border-radius: 28px;
     }
 
-    /* Main Grid Layout */
+    /* Main Container */
     .dashboard {
       position: relative;
       z-index: 3;
@@ -66,52 +67,18 @@
       flex-direction: column;
       justify-content: space-between;
       align-items: center;
-      padding: 5vh 5vw;
+      padding: 8vh 6vw 6vh;
     }
 
-    /* Top Bar: Subscriptions Expiry Widget */
-    .top-bar {
-      width: 100%;
-      display: flex;
-      justify-content: flex-end;
-    }
-
-    .expiry-card {
-      padding: 14px 22px;
-      min-width: 250px;
-    }
-
-    .expiry-title {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      opacity: 0.6;
-      margin-bottom: 8px;
-      font-weight: 700;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      padding-bottom: 4px;
-    }
-
-    .expiry-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.85rem;
-      margin-bottom: 5px;
-    }
-
-    .expiry-row:last-child { margin-bottom: 0; }
-    .expiry-name { opacity: 0.8; font-weight: 500; }
-    .expiry-date { font-weight: 600; color: #72efdd; }
-
-    /* Center Clock */
+    /* Center Clock Card */
     .center-clock {
-      padding: 3vh 5vw;
+      padding: 3.5vh 5vw;
       text-align: center;
-      margin-top: -4vh;
+      margin-top: 4vh;
     }
 
     .time {
-      font-size: 5.5rem;
+      font-size: 6rem;
       font-weight: 200;
       letter-spacing: -2px;
       line-height: 1;
@@ -119,18 +86,18 @@
     }
 
     .date {
-      font-size: 1.25rem;
+      font-size: 1.3rem;
       font-weight: 400;
       opacity: 0.8;
-      margin-top: 10px;
-      letter-spacing: 1px;
+      margin-top: 12px;
+      letter-spacing: 1.5px;
       text-transform: uppercase;
     }
 
     /* App Dock */
     .dock {
       display: flex;
-      gap: 20px;
+      gap: 22px;
       padding: 16px 24px;
       margin-bottom: 2vh;
     }
@@ -140,9 +107,9 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      width: 110px;
-      height: 110px;
-      border-radius: 20px;
+      width: 112px;
+      height: 112px;
+      border-radius: 22px;
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.12);
       text-decoration: none;
@@ -153,8 +120,8 @@
     }
 
     .app-tile svg {
-      width: 42px;
-      height: 42px;
+      width: 44px;
+      height: 44px;
       fill: currentColor;
       margin-bottom: 8px;
     }
@@ -165,23 +132,23 @@
       opacity: 0.9;
     }
 
-    /* D-pad Focus / Hover State */
+    /* Remote Focus / Hover State */
     .app-tile:focus, .app-tile:hover {
       background: rgba(255, 255, 255, 0.28);
-      border-color: rgba(255, 255, 255, 0.6);
+      border-color: rgba(255, 255, 255, 0.65);
       transform: scale(1.12);
-      box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2), 0 0 16px rgba(255, 255, 255, 0.35);
+      box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2), 0 0 18px rgba(255, 255, 255, 0.35);
     }
 
-    /* Secondary "More Apps / Groups" Modal Drawer */
+    /* Secondary Apps / Groups Drawer Modal */
     .modal-overlay {
       position: absolute;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(16px);
+      background: rgba(0, 0, 0, 0.72);
+      backdrop-filter: blur(18px);
       z-index: 10;
       display: none;
       justify-content: center;
@@ -210,13 +177,19 @@
     }
 
     .close-btn {
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       color: white;
-      padding: 8px 18px;
+      padding: 8px 20px;
       border-radius: 12px;
       cursor: pointer;
       font-size: 0.9rem;
+      outline: none;
+    }
+
+    .close-btn:focus, .close-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      border-color: rgba(255, 255, 255, 0.6);
     }
 
     .drawer-grid {
@@ -228,7 +201,7 @@
 </head>
 <body>
 
-  <!-- 3 Wallpapers (Rotating every 5 mins) -->
+  <!-- 3 Wallpapers (Cycles every 5 mins) -->
   <div id="bg0" class="bg active" style="background-image: url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=2560&auto=format&fit=crop');"></div>
   <div id="bg1" class="bg" style="background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=2560&auto=format&fit=crop');"></div>
   <div id="bg2" class="bg" style="background-image: url('https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=2560&auto=format&fit=crop');"></div>
@@ -236,25 +209,13 @@
   <div class="overlay"></div>
 
   <div class="dashboard">
-    <!-- Top-Right Expiry Widget -->
-    <div class="top-bar">
-      <div class="glass expiry-card">
-        <div class="expiry-title">Subscription Expiry</div>
-        <div class="expiry-row"><span class="expiry-name">YouTube</span><span class="expiry-date" id="exp-yt">Nov 15, 2026</span></div>
-        <div class="expiry-row"><span class="expiry-name">Netflix</span><span class="expiry-date" id="exp-nf">Dec 01, 2026</span></div>
-        <div class="expiry-row"><span class="expiry-name">HoiChoi</span><span class="expiry-date" id="exp-hc">Oct 30, 2026</span></div>
-        <div class="expiry-row"><span class="expiry-name">Prime Video</span><span class="expiry-date" id="exp-pv">Jan 10, 2027</span></div>
-        <div class="expiry-row"><span class="expiry-name">Apple TV</span><span class="expiry-date" id="exp-atv">Nov 24, 2026</span></div>
-      </div>
-    </div>
-
-    <!-- Center Clock -->
+    <!-- Center Clock Card -->
     <div class="glass center-clock">
       <div class="time" id="clock">12:00</div>
       <div class="date" id="date">Loading...</div>
     </div>
 
-    <!-- Main App Dock -->
+    <!-- Main Dock -->
     <div class="glass dock">
       <!-- 1. YouTube -->
       <a href="https://www.youtube.com/tv" class="app-tile main-nav" tabindex="1">
@@ -294,7 +255,7 @@
     </div>
   </div>
 
-  <!-- Groups / Secondary Apps Drawer -->
+  <!-- Groups Modal Drawer -->
   <div class="modal-overlay" id="appDrawer">
     <div class="glass drawer-card">
       <div class="drawer-header">
@@ -302,24 +263,12 @@
         <button class="close-btn" id="closeDrawerBtn">Back / Close</button>
       </div>
       <div class="drawer-grid">
-        <a href="https://open.spotify.com" class="app-tile drawer-item">
-          <span>Spotify</span>
-        </a>
-        <a href="https://www.disneyplus.com" class="app-tile drawer-item">
-          <span>Disney+</span>
-        </a>
-        <a href="https://app.plex.tv" class="app-tile drawer-item">
-          <span>Plex</span>
-        </a>
-        <a href="https://www.twitch.tv" class="app-tile drawer-item">
-          <span>Twitch</span>
-        </a>
-        <a href="https://fast.com" class="app-tile drawer-item">
-          <span>Speed Test</span>
-        </a>
-        <a href="https://www.google.com" class="app-tile drawer-item">
-          <span>Search</span>
-        </a>
+        <a href="https://open.spotify.com" class="app-tile drawer-item"><span>Spotify</span></a>
+        <a href="https://www.disneyplus.com" class="app-tile drawer-item"><span>Disney+</span></a>
+        <a href="https://app.plex.tv" class="app-tile drawer-item"><span>Plex</span></a>
+        <a href="https://www.twitch.tv" class="app-tile drawer-item"><span>Twitch</span></a>
+        <a href="https://fast.com" class="app-tile drawer-item"><span>Speed Test</span></a>
+        <a href="https://www.google.com" class="app-tile drawer-item"><span>Search</span></a>
       </div>
     </div>
   </div>
@@ -347,7 +296,7 @@
       document.getElementById(`bg${currentIdx}`).classList.add('active');
     }, 5 * 60 * 1000);
 
-    // 3. Drawer Toggle Logic
+    // 3. Groups Drawer Logic
     const drawer = document.getElementById('appDrawer');
     const moreBtn = document.getElementById('moreAppsBtn');
     const closeBtn = document.getElementById('closeDrawerBtn');
@@ -366,12 +315,12 @@
     moreBtn.addEventListener('click', openDrawer);
     closeBtn.addEventListener('click', closeDrawer);
 
-    // 4. Remote Control Focus Management
+    // 4. Remote Control Arrow Key & Enter Navigation
     const mainTiles = Array.from(document.querySelectorAll('.main-nav'));
     let activeIndex = 0;
 
     window.addEventListener('keydown', (e) => {
-      // Exit modal on TV Back / Escape
+      // Exit modal on TV Back key or Escape
       if (e.key === 'Escape' || e.key === 'GoBack' || e.keyCode === 461) {
         if (drawer.classList.contains('open')) {
           closeDrawer();
@@ -379,7 +328,6 @@
         return;
       }
 
-      // If drawer is closed, manage main dock navigation
       if (!drawer.classList.contains('open')) {
         if (e.key === 'ArrowRight') {
           activeIndex = (activeIndex + 1) % mainTiles.length;
